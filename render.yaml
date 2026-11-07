@@ -1,0 +1,81 @@
+# Render Blueprint: tạo cùng lúc API (backend) + giao diện (frontend).
+# Dùng: Render Dashboard → New → Blueprint → chọn repo GitHub chứa file này.
+# Các biến có "sync: false" sẽ được Render hỏi giá trị khi tạo.
+services:
+  # ---------- Backend NestJS ----------
+  - type: web
+    name: tvinhhh-api            # nếu trùng tên người khác, Render sẽ thêm hậu tố ngẫu nhiên vào địa chỉ
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node dist/main
+    healthCheckPath: /api/v1/system/features
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      # --- Database MySQL (Render không có MySQL, dùng dịch vụ ngoài như Aiven) ---
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+      - key: DB_SYNCHRONIZE
+        value: "true"
+      # --- JWT: Render tự sinh chuỗi ngẫu nhiên ---
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      # --- Địa chỉ công khai (điền sau khi biết địa chỉ 2 service) ---
+      - key: API_PUBLIC_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # --- Lưu file: Render free xóa file mỗi lần ngủ/deploy → phải dùng S3 hoặc dịch vụ tương thích S3 ---
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_ENDPOINT
+        sync: false
+      # --- Tài khoản admin tạo ở lần chạy đầu tiên ---
+      - key: SEED_ADMIN_EMAIL
+        value: admin@hub.local
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      # --- Render free chặn cổng SMTP → hiện link đặt lại mật khẩu ngay trên trang (chỉ để demo) ---
+      - key: SHOW_DEV_RESET_LINK
+        value: "true"
+
+  # ---------- Frontend React (static site) ----------
+  - type: web
+    name: tvinhhh-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci --include=dev && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL        # địa chỉ backend, ví dụ https://tvinhhh-api.onrender.com (KHÔNG có dấu / ở cuối)
+        sync: false
+    routes:
+      - type: rewrite            # để F5 ở các trang như /documents/1 không bị lỗi 404
+        source: /*
+        destination: /index.html

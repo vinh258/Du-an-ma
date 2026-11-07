@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Màu theo theme (dạng "R G B" để dùng được độ trong suốt) ---------- */
+:root {
+  color-scheme: light;
+  --paper: 244 243 251;   --surface: 255 255 255;
+  --ink: 24 20 51;        --muted: 98 93 128;      --line: 224 221 241;
+  --brand: 91 61 245;     --brand-dark: 68 42 214; --brand-soft: 238 234 255;
+  --accent: 232 62 140;   --accent-soft: 255 232 242;
+  --amber: 196 106 0;     --amber-soft: 255 244 223;
+  --danger: 214 40 70;    --danger-soft: 255 232 236;
+  --aurora: 0.35;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: 12 10 28;      --surface: 22 19 44;
+  --ink: 238 236 255;     --muted: 166 161 201;    --line: 46 41 82;
+  --brand: 133 104 255;   --brand-dark: 112 82 240; --brand-soft: 38 32 84;
+  --accent: 255 110 170;  --accent-soft: 62 24 48;
+  --amber: 251 191 36;    --amber-soft: 54 42 14;
+  --danger: 255 107 129;  --danger-soft: 60 22 36;
+  --aurora: 0.55;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-paper text-ink font-sans antialiased; }
+  h1, h2, h3 { @apply font-display tracking-tight; }
+  ::selection { background: rgb(var(--brand) / 0.3); }
+  :focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-paper; }
+  /* chuyển sáng/tối mượt */
+  html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+    transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease !important;
+  }
+}
+
+@layer components {
+  .btn { @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-brand text-white shadow-glow hover:-translate-y-0.5 hover:bg-brand-dark; }
+  .btn-primary::after { content: ''; position: absolute; inset: 0; transform: translateX(-120%) skewX(-20deg);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .35), transparent); transition: transform .6s ease; }
+  .btn-primary:hover::after { transform: translateX(120%) skewX(-20deg); }
+  .btn-outline { @apply btn border border-line bg-surface text-ink hover:-translate-y-0.5 hover:border-brand hover:text-brand; }
+  .btn-danger { @apply btn bg-danger text-white hover:-translate-y-0.5 hover:opacity-90; }
+  .btn-sm { @apply rounded-lg px-3 py-1.5 text-xs; }
+  .input { @apply w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm transition-shadow placeholder:text-muted/70 focus:border-brand focus:shadow-[0_0_0_4px_rgb(var(--brand)/0.15)]; }
+  .label { @apply mb-1 block text-sm font-medium; }
+  .panel { @apply rounded-2xl border border-line bg-surface; }
+
+  /* Thẻ tài liệu: nổi lên + viền sáng khi rê chuột */
+  .card-hover { @apply relative transition-all duration-300 hover:-translate-y-1 hover:border-brand/60 hover:shadow-lift; }
+  .card-hover::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 3px;
+    background: linear-gradient(rgb(var(--brand)), rgb(var(--accent))); transform: scaleY(0); transition: transform .3s ease; }
+  .card-hover:hover::before { transform: scaleY(1); }
+
+  /* Sidebar */
+  .nav-item { @apply relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-all duration-200 hover:translate-x-1 hover:bg-brand-soft hover:text-ink; }
+  .nav-item .nav-ico { transition: transform .3s cubic-bezier(.3,1.6,.5,1); }
+  .nav-item:hover .nav-ico { transform: rotate(-8deg) scale(1.25); }
+  .nav-active { @apply bg-brand text-white shadow-glow hover:bg-brand hover:text-white; }
+}
+
+/* ---------- Chữ TVinhhh: từng chữ nhảy lên khi rê chuột ---------- */
+.wordmark { display: inline-flex; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; letter-spacing: -0.03em; cursor: pointer; }
+.wordmark span { display: inline-block; }
+.wordmark:hover span { animation: jump .6s cubic-bezier(.3,1.6,.5,1) both; animation-delay: calc(var(--i) * 55ms); }
+@keyframes jump { 0% { transform: translateY(0) } 35% { transform: translateY(-9px) rotate(-6deg) scale(1.2) } 100% { transform: translateY(0) } }
+
+/* ---------- Hero: chữ bay nổi ---------- */
+.hero-glow { background: radial-gradient(420px circle at var(--mx, 70%) var(--my, 30%), rgb(var(--brand) / .22), transparent 60%); transition: background .1s; }
+.float-word { position: absolute; animation: float-a 7s ease-in-out infinite; }
+.float-word:nth-child(3n+2) { animation-name: float-b; }
+.float-word:nth-child(3n) { animation-name: float-c; }
+@keyframes float-a { 0%,100% { transform: translate(0,0) rotate(-3deg) } 50% { transform: translate(12px,-16px) rotate(3deg) } }
+@keyframes float-b { 0%,100% { transform: translate(0,0) rotate(2deg) } 50% { transform: translate(-14px,12px) rotate(-4deg) } }
+@keyframes float-c { 0%,100% { transform: translate(0,0) rotate(0) } 33% { transform: translate(10px,10px) rotate(4deg) } 66% { transform: translate(-8px,-8px) rotate(-3deg) } }
+.fw-btn { border-radius: 9999px; padding: .35rem .9rem; font-weight: 600; white-space: nowrap; border: 1px solid transparent;
+  transition: transform .25s cubic-bezier(.3,1.6,.5,1), box-shadow .25s, background .25s, color .25s; }
+.fw-btn:hover { transform: scale(1.25) rotate(-4deg); box-shadow: 0 12px 28px -8px rgb(var(--brand) / .6); background: rgb(var(--brand)); color: #fff; }
+.fw-0 { background: rgb(var(--brand-soft)); color: rgb(var(--brand)); }
+.fw-1 { background: rgb(var(--accent-soft)); color: rgb(var(--accent)); }
+.fw-2 { background: rgb(var(--amber-soft)); color: rgb(var(--amber)); }
+.fw-3 { background: rgb(var(--surface)); color: rgb(var(--ink)); border-color: rgb(var(--line)); }
+
+/* ---------- Nền aurora ---------- */
+.aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.aurora i { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: var(--aurora); animation: drift 24s ease-in-out infinite; }
+.aurora i:nth-child(1) { width: 480px; height: 480px; left: -120px; top: -100px; background: rgb(var(--brand)); }
+.aurora i:nth-child(2) { width: 420px; height: 420px; right: -100px; top: 25%; background: rgb(var(--accent)); animation-delay: -8s; }
+.aurora i:nth-child(3) { width: 380px; height: 380px; left: 35%; bottom: -160px; background: rgb(var(--brand-dark)); animation-delay: -15s; }
+@keyframes drift { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(60px,40px) scale(1.15) } }
+
+.page-in { animation: page-in .35s ease-out both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+
+/* Nút đổi sáng/tối: mặt trời <-> mặt trăng xoay */
+.theme-ico { position: absolute; inset: 0; margin: auto; transition: transform .5s cubic-bezier(.3,1.4,.5,1), opacity .3s; }
+[data-theme='light'] .theme-sun { transform: rotate(0) scale(1); opacity: 1; }
+[data-theme='light'] .theme-moon { transform: rotate(-90deg) scale(.3); opacity: 0; }
+[data-theme='dark'] .theme-sun { transform: rotate(90deg) scale(.3); opacity: 0; }
+[data-theme='dark'] .theme-moon { transform: rotate(0) scale(1); opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+}

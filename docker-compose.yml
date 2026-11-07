@@ -1,0 +1,58 @@
+# Chạy cả hệ thống bằng 1 lệnh:  docker compose up --build
+#   Giao diện: http://localhost:5173     API + Swagger: http://localhost:3000/api/docs
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-123456}
+      MYSQL_DATABASE: academic_hub
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD:-123456}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      API_PUBLIC_URL: http://localhost:3000
+      FRONTEND_URL: http://localhost:5173
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+      DB_NAME: academic_hub
+      DB_SYNCHRONIZE: "true"
+      JWT_SECRET: ${JWT_SECRET:-doi-chuoi-bi-mat-nay-1}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-doi-chuoi-bi-mat-nay-2}
+      STORAGE_DRIVER: local
+      UPLOAD_DIR: /app/uploads
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3000
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  db_data:
+  uploads:
