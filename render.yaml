@@ -1,4 +1,4 @@
-# Render Blueprint: tạo cùng lúc API (backend) + giao diện (frontend).
+# Render Blueprint: chỉ tạo API backend; frontend được triển khai riêng trên Vercel.
 # Dùng: Render Dashboard → New → Blueprint → chọn repo GitHub chứa file này.
 # Các biến có "sync: false" sẽ được Render hỏi giá trị khi tạo.
 services:
@@ -38,24 +38,14 @@ services:
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      # --- Địa chỉ công khai (điền sau khi biết địa chỉ 2 service) ---
+      # --- Địa chỉ công khai (điền sau khi biết domain Render và Vercel) ---
       - key: API_PUBLIC_URL
         sync: false
       - key: FRONTEND_URL
         sync: false
-      # --- Lưu file: Render free xóa file mỗi lần ngủ/deploy → phải dùng S3 hoặc dịch vụ tương thích S3 ---
+      # --- Lưu file tạm trên Render; file có thể mất khi service khởi động lại hoặc deploy ---
       - key: STORAGE_DRIVER
-        value: s3
-      - key: AWS_REGION
-        sync: false
-      - key: AWS_S3_BUCKET
-        sync: false
-      - key: AWS_ACCESS_KEY_ID
-        sync: false
-      - key: AWS_SECRET_ACCESS_KEY
-        sync: false
-      - key: AWS_S3_ENDPOINT
-        sync: false
+        value: local
       # --- Tài khoản admin tạo ở lần chạy đầu tiên ---
       - key: SEED_ADMIN_EMAIL
         value: admin@hub.local
@@ -64,18 +54,3 @@ services:
       # --- Render free chặn cổng SMTP → hiện link đặt lại mật khẩu ngay trên trang (chỉ để demo) ---
       - key: SHOW_DEV_RESET_LINK
         value: "true"
-
-  # ---------- Frontend React (static site) ----------
-  - type: web
-    name: tvinhhh-web
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm ci --include=dev && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL        # địa chỉ backend, ví dụ https://tvinhhh-api.onrender.com (KHÔNG có dấu / ở cuối)
-        sync: false
-    routes:
-      - type: rewrite            # để F5 ở các trang như /documents/1 không bị lỗi 404
-        source: /*
-        destination: /index.html
