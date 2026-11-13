@@ -44,7 +44,7 @@ export default function Home() {
       <Hero />
       {!filtered && trending && trending.length > 0 && (
         <section className="mb-8" aria-label="Xu hướng tuần này">
-          <h2 className="mb-3 text-2xl font-bold">🔥 Xu hướng tuần này</h2>
+          <h2 className="mb-3 text-xl font-bold">Được quan tâm tuần này</h2>
           <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {trending.slice(0, 6).map((d, i) => (
               <li key={d.id}>

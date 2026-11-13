@@ -14,7 +14,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', '"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+        display: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         glow: '0 10px 30px -10px rgb(var(--brand) / 0.65)',

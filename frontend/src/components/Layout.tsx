@@ -46,12 +46,10 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen">
-      <div className="aurora" aria-hidden="true"><i /><i /><i /></div>
-
       {drawer && <div className="fixed inset-0 z-30 bg-ink/50 backdrop-blur-sm lg:hidden" onClick={() => setDrawer(false)} />}
 
       {/* ===== SIDEBAR ===== */}
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface/90 backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
+      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface transition-transform duration-300 lg:translate-x-0 ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
         aria-label="Menu chính">
         <div className="flex items-center justify-between px-5 pb-2 pt-5">
           <Link to="/" aria-label="TVinhhh — trang chủ"><Wordmark className="text-3xl" /></Link>
@@ -104,7 +102,7 @@ export default function Layout() {
 
       {/* ===== NỘI DUNG ===== */}
       <div className="flex min-h-screen flex-col lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-paper/80 px-4 py-3 backdrop-blur-xl">
+        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-surface px-4 py-3">
           <button className="rounded-xl p-2.5 text-muted hover:bg-brand-soft lg:hidden" onClick={() => setDrawer(true)} aria-label="Mở menu"><Icon name="menu" /></button>
           <form onSubmit={search} className="relative max-w-md flex-1" role="search">
             <Icon name="search" size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
